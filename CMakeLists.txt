@@ -23,7 +23,7 @@ find_package(OpenCV REQUIRED)
 find_package(TensorFlowLite)
 find_package(ZLIB CONFIG REQUIRED)
 
-add_library(EasyTFLite TFLite.cpp TFLite.h)
+add_library(EasyTFLite src/TFLite.cpp src/TFLite.h)
 target_link_libraries(EasyTFLite
         Boost::filesystem
         glog::glog
