@@ -9,6 +9,7 @@
 #include <boost/filesystem/path.hpp>
 #include <tensorflow/lite/model.h>
 #include <tensorflow/lite/interpreter.h>
+#include <tensorflow/lite/op_resolver.h>
 
 //! The TFLite class wraps Tensorflow Lite
 /*!
@@ -21,10 +22,18 @@ class TFLite {
 
 public:
     /*!
-     * This class initialized TFLite
+     * This function initialized TFLite with the built-in Ops.
      * @param model_path A boost path object containing path to the Tensorflow Lite path.
      */
-    explicit TFLite(const boost::filesystem::path& model_path);
+    explicit TFLite(const boost::filesystem::path &model_path);
+
+    /*!
+     * You can use this function, and define your own OpResolver for custom operators.
+     * @param model_path A boost path object containing path to the Tensorflow Lite path.
+     * @param op_resolver An instance that implements the OpResolver interface. (You can have a custom
+     * Resolver with custom ops)
+     */
+    TFLite(const boost::filesystem::path &model_path, const tflite::OpResolver &op_resolver);
 };
 
 
