@@ -8,21 +8,21 @@ if (NOT TENSORFLOW_PATH)
     message(FATAL_ERROR "TENSORFLOW_PATH must point to your TensorFlow source build")
 endif ()
 
+set(BAZEL_EXTERNAL_PATH "${TENSORFLOW_PATH}/bazel-tensorflow/external")
+
 set(TENSORFLOWLITE_INCLUDE_DIR
         "${TENSORFLOW_PATH}"
         "${TENSORFLOW_PATH}/tensorflow"
-        "${TENSORFLOW_PATH}/tensorflow/lite/tools/make/downloads"
-        "${TENSORFLOW_PATH}/tensorflow/lite/tools/make/downloads/eigen"
-        "${TENSORFLOW_PATH}/tensorflow/lite/tools/make/downloads/absl"
-        "${TENSORFLOW_PATH}/tensorflow/lite/tools/make/downloads/gemmlowp"
-        "${TENSORFLOW_PATH}/tensorflow/lite/tools/make/downloads/neon_2_sse"
-        "${TENSORFLOW_PATH}/tensorflow/lite/tools/make/downloads/farmhash/src"
-        "${TENSORFLOW_PATH}/tensorflow/lite/tools/make/downloads/flatbuffers/include")
+        "${BAZEL_EXTERNAL_PATH}/eigen_archive"
+        "${BAZEL_EXTERNAL_PATH}/gemmlowp"
+        "${BAZEL_EXTERNAL_PATH}/arm_neon_2_x86_sse"
+        "${BAZEL_EXTERNAL_PATH}/farmhash_archive/src"
+        "${BAZEL_EXTERNAL_PATH}/flatbuffers/include")
 
 find_library(TENSORFLOWLITE_LIBRARY
-        NAMES tensorflow-lite libtensorflow-lite
+        NAMES tensorflowlite libtensorflowlite
         HINTS
-        "${TENSORFLOW_PATH}/tensorflow/lite/tools/make/gen/osx_x86_64/lib"
+        "${TENSORFLOW_PATH}/bazel-bin/tensorflow/lite"
 )
 
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(TENSORFLOWLITE
