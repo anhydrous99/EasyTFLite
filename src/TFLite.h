@@ -5,6 +5,7 @@
 #ifndef EASYTFLITE_TFLITE_H
 #define EASYTFLITE_TFLITE_H
 
+#include <map>
 #include <memory>
 #include <vector>
 #include <boost/filesystem/path.hpp>
@@ -130,7 +131,7 @@ public:
      * @param tensor The tensor in the form of a boost::multi_array
      * @param tensor_index Index of the input tensor to fill
      */
-    template<typename T, int Rank>
+    template<typename T, unsigned long Rank>
     void fill_input_tensor(const boost::multi_array<T, Rank> &tensor, int tensor_index) {
         // Stops if T is not uint8_t or float
         BOOST_STATIC_ASSERT(boost::mpl::contains<boost::variant<uint8_t, float>::types, T>::value);
@@ -139,6 +140,32 @@ public:
         T *input_tensor_ptr = tensor.data();
         for (size_type i = 0; i < tensor.num_elements(); i++)
             tensor_ptr[i] = input_tensor_ptr[i];
+    }
+
+    /*!
+     * Fill all input tensors from a hashtable of tensors
+     * @tparam T The tensor type, must be uint8_t or float, depending if model is quantized or not.
+     * @tparam Rank Tensor rank
+     * @param tensors A map where the key is the tensor index and the value is the Eigen::Tensor tensor
+     */
+    template<typename T, int Rank>
+    void fill_input_tensors(const std::map<int, Eigen::Tensor<T, Rank>> &tensors) {
+        for (const auto& tensor : tensors) {
+            fill_input_tensor(tensor.second, tensor.first);
+        }
+    }
+
+    /*!
+     * Fill all input tensors from a hashtable of tensors
+     * @tparam T The tensor type, must be uint8_t or float, depending if model is quantized or not.
+     * @tparam Rank Tensor rank
+     * @param tensors A map where the key is the tensor index and the value is the boost::multi_array tensor
+     */
+    template<typename T, unsigned long Rank>
+    void fill_input_tensors(const std::map<int, boost::multi_array<T, Rank>> &tensors) {
+        for (const auto& tensor : tensors) {
+            fill_input_tensor(tensor.second, tensor.first);
+        }
     }
 };
 
