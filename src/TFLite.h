@@ -14,6 +14,7 @@
 #include <tensorflow/lite/model.h>
 #include <tensorflow/lite/interpreter.h>
 #include <tensorflow/lite/op_resolver.h>
+#include <eigen3/unsupported/Eigen/CXX11/Tensor>
 
 //! The TFLite class wraps Tensorflow Lite
 /*!
@@ -55,7 +56,7 @@ public:
      * Fills input tensor
      * @tparam T The tensor type, must be uint8_t or float, depending if model is quantized or not.
      * @param data Pointer to data
-     * @param tensor_index Index of input tensor
+     * @param tensor_index Index of the input tensor to fill
      * @param n_elements Number of elements in data
      */
     template<typename T>
@@ -65,6 +66,41 @@ public:
         auto tensor_ptr = interpreter->typed_input_tensor<T>(tensor_index);
         for (int i = 0; i < n_elements; i++)
             tensor_ptr[i] = data[i];
+    }
+
+    /*!
+     * Fill input tensor from an Eigen::Tensor
+     * @tparam T The tensor type, must be uint8_t or float, depending if model is quantized or not.
+     * @tparam Rank Tensor rank
+     * @param tensor The tensor in the form of a Eigen::Tensor
+     * @param tensor_index Index of the input tensor to fill
+     */
+    template<typename T, int Rank>
+    void fill_input_tensor(const Eigen::Tensor<T, Rank>& tensor, int tensor_index) {
+        // Stops if T is not uint8_t or float
+        BOOST_STATIC_ASSERT(boost::mpl::contains<boost::variant<uint8_t, float>::types, T>::value);
+        auto tensor_ptr = interpreter->typed_input_tensor<T>(tensor_index);
+        T* input_tensor_ptr = tensor.data();
+        for (long i = 0; i < tensor.size(); i++)
+            tensor_ptr[i] = input_tensor_ptr[i];
+    }
+
+    /*!
+     * Fill input tensor from a boost::multi_array
+     * @tparam T The tensor type, must be uint8_t or float, depending if model is quantized or not.
+     * @tparam Rank Tensor rank
+     * @param tensor The tensor in the form of a boost::multi_array
+     * @param tensor_index Index of the input tensor to fille
+     */
+    template<typename T, int Rank>
+    void fill_input_tensor(const boost::multi_array<T, Rank>& tensor, int tensor_index) {
+        // Stops if T is not uint8_t or float
+        BOOST_STATIC_ASSERT(boost::mpl::contains<boost::variant<uint8_t, float>::types, T>::value);
+        typedef typename boost::multi_array<T, Rank>::size_type size_type;
+        auto tensor_ptr = interpreter->typed_input_tensor<T>(tensor_index);
+        T* input_tensor_ptr = tensor.data();
+        for (size_type i = 0; i < tensor.num_elements(); i++)
+            tensor_ptr[i] = input_tensor_ptr[i];
     }
 };
 
