@@ -66,3 +66,11 @@ std::vector<int> TFLite::input_tensors() {
 std::vector<int> TFLite::output_tensors() {
     return interpreter->outputs();
 }
+
+std::vector<int> TFLite::get_tensor_dims(int tensor_index) {
+    TfLiteIntArray* dims = interpreter->tensor(tensor_index)->dims;
+    std::vector<int> output(dims->size);
+    for (int i = 0; i < dims->size; i++)
+        output[i] = dims->data[i];
+    return output;
+}

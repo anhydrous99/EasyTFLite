@@ -53,6 +53,13 @@ public:
     std::vector<int> output_tensors();
 
     /*!
+     * Get dimension of input tensor
+     * @param tensor_index Index of tensor to get dimensions for
+     * @return A vector containing dimension of tensor
+     */
+    std::vector<int> get_tensor_dims(int tensor_index);
+
+    /*!
      * Fills input tensor
      * @tparam T The tensor type, must be uint8_t or float, depending if model is quantized or not.
      * @param data Pointer to data
@@ -63,7 +70,7 @@ public:
     void fill_input_tensor(T* data, int tensor_index, int n_elements) {
         // Stops if T is not uint8_t or float
         BOOST_STATIC_ASSERT(boost::mpl::contains<boost::variant<uint8_t, float>::types, T>::value);
-        auto tensor_ptr = interpreter->typed_input_tensor<T>(tensor_index);
+        auto tensor_ptr = interpreter->typed_tensor<T>(tensor_index);
         for (int i = 0; i < n_elements; i++)
             tensor_ptr[i] = data[i];
     }
@@ -79,7 +86,7 @@ public:
     void fill_input_tensor(const Eigen::Tensor<T, Rank>& tensor, int tensor_index) {
         // Stops if T is not uint8_t or float
         BOOST_STATIC_ASSERT(boost::mpl::contains<boost::variant<uint8_t, float>::types, T>::value);
-        auto tensor_ptr = interpreter->typed_input_tensor<T>(tensor_index);
+        auto tensor_ptr = interpreter->typed_tensor<T>(tensor_index);
         T* input_tensor_ptr = tensor.data();
         for (long i = 0; i < tensor.size(); i++)
             tensor_ptr[i] = input_tensor_ptr[i];
@@ -97,7 +104,7 @@ public:
         // Stops if T is not uint8_t or float
         BOOST_STATIC_ASSERT(boost::mpl::contains<boost::variant<uint8_t, float>::types, T>::value);
         typedef typename boost::multi_array<T, Rank>::size_type size_type;
-        auto tensor_ptr = interpreter->typed_input_tensor<T>(tensor_index);
+        auto tensor_ptr = interpreter->typed_tensor<T>(tensor_index);
         T* input_tensor_ptr = tensor.data();
         for (size_type i = 0; i < tensor.num_elements(); i++)
             tensor_ptr[i] = input_tensor_ptr[i];
