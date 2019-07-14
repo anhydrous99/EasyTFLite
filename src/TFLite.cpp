@@ -6,7 +6,6 @@
 
 #include <tensorflow/lite/kernels/register.h>
 #include <boost/filesystem.hpp>
-#include <glog/logging.h>
 
 static void model_path_checker(const boost::filesystem::path &model_path) {
     if (!boost::filesystem::exists(model_path))
@@ -89,7 +88,7 @@ TFLite::TFLite(const boost::filesystem::path &model_path, const ExternalContextP
 }
 
 TFLite::TFLite(const boost::filesystem::path &model_path, const ExternalContextPair &external_context,
-       const tflite::OpResolver &op_resolver) {
+               const tflite::OpResolver &op_resolver) {
     // Check if file exists
     model_path_checker(model_path);
 
@@ -123,7 +122,7 @@ std::vector<int> TFLite::output_tensors() {
 }
 
 std::vector<int> TFLite::get_tensor_dims(int tensor_index) {
-    TfLiteIntArray* dims = interpreter->tensor(tensor_index)->dims;
+    TfLiteIntArray *dims = interpreter->tensor(tensor_index)->dims;
     std::vector<int> output(dims->size);
     for (int i = 0; i < dims->size; i++)
         output[i] = dims->data[i];
@@ -132,4 +131,9 @@ std::vector<int> TFLite::get_tensor_dims(int tensor_index) {
 
 TfLiteType TFLite::get_tensor_type(int tensor_index) {
     return interpreter->tensor(tensor_index)->type;
+}
+
+int TFLite::get_tensor_element_count(int tensor_index) {
+    std::vector<int> dims = get_tensor_dims(tensor_index);
+    return std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<>());
 }

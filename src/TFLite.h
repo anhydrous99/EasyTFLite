@@ -92,6 +92,13 @@ public:
     TfLiteType get_tensor_type(int tensor_index);
 
     /*!
+     * Gets the number of elements in a tensor
+     * @param tensor_index Index of tensor
+     * @return The number of elements in the tensor with tensor_index
+     */
+    int get_tensor_element_count(int tensor_index);
+
+    /*!
      * Fills input tensor
      * @tparam T The tensor type, must be uint8_t or float, depending if model is quantized or not.
      * @param data Pointer to data
@@ -103,8 +110,7 @@ public:
         // Stops if T is not uint8_t or float
         BOOST_STATIC_ASSERT(boost::mpl::contains<boost::variant<uint8_t, float>::types, T>::value);
         auto tensor_ptr = interpreter->typed_tensor<T>(tensor_index);
-        for (int i = 0; i < n_elements; i++)
-            tensor_ptr[i] = data[i];
+        std::copy(data, data + n_elements, tensor_ptr);
     }
 
     /*!
@@ -116,12 +122,9 @@ public:
      */
     template<typename T, int Rank>
     void fill_input_tensor(const Eigen::Tensor<T, Rank> &tensor, int tensor_index) {
-        // Stops if T is not uint8_t or float
-        BOOST_STATIC_ASSERT(boost::mpl::contains<boost::variant<uint8_t, float>::types, T>::value);
-        auto tensor_ptr = interpreter->typed_tensor<T>(tensor_index);
+        int n_elements = static_cast<int>(tensor.size());
         T *input_tensor_ptr = tensor.data();
-        for (long i = 0; i < tensor.size(); i++)
-            tensor_ptr[i] = input_tensor_ptr[i];
+        fill_input_tensor(input_tensor_ptr, tensor_index, n_elements);
     }
 
     /*!
@@ -133,13 +136,9 @@ public:
      */
     template<typename T, unsigned long Rank>
     void fill_input_tensor(const boost::multi_array<T, Rank> &tensor, int tensor_index) {
-        // Stops if T is not uint8_t or float
-        BOOST_STATIC_ASSERT(boost::mpl::contains<boost::variant<uint8_t, float>::types, T>::value);
-        typedef typename boost::multi_array<T, Rank>::size_type size_type;
-        auto tensor_ptr = interpreter->typed_tensor<T>(tensor_index);
+        int n_elements = tensor.num_elements();
         T *input_tensor_ptr = tensor.data();
-        for (size_type i = 0; i < tensor.num_elements(); i++)
-            tensor_ptr[i] = input_tensor_ptr[i];
+        fill_input_tensor(input_tensor_ptr, tensor_index, n_elements);
     }
 
     /*!
@@ -150,7 +149,7 @@ public:
      */
     template<typename T, int Rank>
     void fill_input_tensors(const std::map<int, Eigen::Tensor<T, Rank>> &tensors) {
-        for (const auto& tensor : tensors) {
+        for (const auto &tensor : tensors) {
             fill_input_tensor(tensor.second, tensor.first);
         }
     }
@@ -163,7 +162,7 @@ public:
      */
     template<typename T, unsigned long Rank>
     void fill_input_tensors(const std::map<int, boost::multi_array<T, Rank>> &tensors) {
-        for (const auto& tensor : tensors) {
+        for (const auto &tensor : tensors) {
             fill_input_tensor(tensor.second, tensor.first);
         }
     }
