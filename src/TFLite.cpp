@@ -58,3 +58,11 @@ TFLite::TFLite(const boost::filesystem::path &model_path, const tflite::OpResolv
     if (interpreter->AllocateTensors() != kTfLiteOk)
         LOG(FATAL) << "Couldn't allocate tensor buffers\n";
 }
+
+std::vector<int> TFLite::input_tensors() {
+    return interpreter->inputs();
+}
+
+std::vector<int> TFLite::output_tensors() {
+    return interpreter->outputs();
+}
