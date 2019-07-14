@@ -16,7 +16,7 @@ hunter_add_package(GTest)
 hunter_add_package(OpenCV)
 hunter_add_package(ZLIB)
 
-find_package(Boost CONFIG REQUIRED filesystem stacktrace_backtrace)
+find_package(Boost CONFIG REQUIRED filesystem)
 find_package(glog CONFIG REQUIRED)
 find_package(GMock CONFIG REQUIRED)
 find_package(OpenCV REQUIRED)
@@ -26,7 +26,6 @@ find_package(ZLIB CONFIG REQUIRED)
 add_library(EasyTFLite src/TFLite.cpp src/TFLite.h)
 target_link_libraries(EasyTFLite
         Boost::filesystem
-        Boost::stacktrace_backtrace
         glog::glog
         GMock::main
         TensorFlowLite::TensorFlowLite
