@@ -16,6 +16,12 @@
 #include <tensorflow/lite/op_resolver.h>
 #include <eigen3/unsupported/Eigen/CXX11/Tensor>
 
+//! A struct that contains the TfLite context type and a pointer to the TfLite Context
+struct ExternalContextPair {
+    TfLiteExternalContextType type;
+    TfLiteExternalContext *ctx;
+};
+
 //! The TFLite class wraps Tensorflow Lite
 /*!
  * This class abstracts and interfaces with Tensorflow Lite, taking care of any small details required to use it.
@@ -28,17 +34,34 @@ class TFLite {
 public:
     /*!
      * This function initialized TFLite with the built-in Ops.
-     * @param model_path A boost path object containing path to the Tensorflow Lite path.
+     * @param model_path A boost path object containing the path to the Tensorflow Lite Flatbuffer model
      */
     explicit TFLite(const boost::filesystem::path &model_path);
 
     /*!
      * You can use this function, and define your own OpResolver for custom operators.
-     * @param model_path A boost path object containing path to the Tensorflow Lite path.
+     * @param model_path A boost path object containing the path to the Tensorflow Lite Flatbuffer model
      * @param op_resolver An instance that implements the OpResolver interface. (You can have a custom
      * Resolver with custom ops)
      */
     TFLite(const boost::filesystem::path &model_path, const tflite::OpResolver &op_resolver);
+
+    /*!
+     * You can use this constructor to also set the external context (e.g. EdgeTPU)
+     * @param model_path A boost path object containing the path to the Tensorflow Lite Flatbuffer model
+     * @param external_context The external context (e.g. EdgeTPU)
+     */
+    TFLite(const boost::filesystem::path &model_path, const ExternalContextPair &external_context);
+
+    /*!
+     * You can use this constructor to also set the external context and a custom OpResolver
+     * @param model_path A boost path object containing the path to the Tensorflow Lite Flatbuffer model
+     * @param external_context The external context (e.g. EdgeTPU)
+     * @param op_resolver An instance that implements the OpResolver interface. (You can have a custom
+     * Resolver with custom ops)
+     */
+    TFLite(const boost::filesystem::path &model_path, const ExternalContextPair &external_context,
+           const tflite::OpResolver &op_resolver);
 
     /*!
      * Gets indexes of all input tensors
@@ -53,11 +76,19 @@ public:
     std::vector<int> output_tensors();
 
     /*!
-     * Get dimension of input tensor
+     * Get dimension of tensor
      * @param tensor_index Index of tensor to get dimensions for
      * @return A vector containing dimension of tensor
      */
     std::vector<int> get_tensor_dims(int tensor_index);
+
+    /*!
+     * Get the tensor type
+     * @param tensor_index Index of tensor to get type for
+     * @return A TfLiteType enum denoting type (Probably either it is kTfLiteFloat32 denoting 32 bit float or
+     * kTfLiteUint8 denoting unsigned 8 bit integer)
+     */
+    TfLiteType get_tensor_type(int tensor_index);
 
     /*!
      * Fills input tensor
@@ -67,7 +98,7 @@ public:
      * @param n_elements Number of elements in data
      */
     template<typename T>
-    void fill_input_tensor(T* data, int tensor_index, int n_elements) {
+    void fill_input_tensor(T *data, int tensor_index, int n_elements) {
         // Stops if T is not uint8_t or float
         BOOST_STATIC_ASSERT(boost::mpl::contains<boost::variant<uint8_t, float>::types, T>::value);
         auto tensor_ptr = interpreter->typed_tensor<T>(tensor_index);
@@ -83,11 +114,11 @@ public:
      * @param tensor_index Index of the input tensor to fill
      */
     template<typename T, int Rank>
-    void fill_input_tensor(const Eigen::Tensor<T, Rank>& tensor, int tensor_index) {
+    void fill_input_tensor(const Eigen::Tensor<T, Rank> &tensor, int tensor_index) {
         // Stops if T is not uint8_t or float
         BOOST_STATIC_ASSERT(boost::mpl::contains<boost::variant<uint8_t, float>::types, T>::value);
         auto tensor_ptr = interpreter->typed_tensor<T>(tensor_index);
-        T* input_tensor_ptr = tensor.data();
+        T *input_tensor_ptr = tensor.data();
         for (long i = 0; i < tensor.size(); i++)
             tensor_ptr[i] = input_tensor_ptr[i];
     }
@@ -100,12 +131,12 @@ public:
      * @param tensor_index Index of the input tensor to fill
      */
     template<typename T, int Rank>
-    void fill_input_tensor(const boost::multi_array<T, Rank>& tensor, int tensor_index) {
+    void fill_input_tensor(const boost::multi_array<T, Rank> &tensor, int tensor_index) {
         // Stops if T is not uint8_t or float
         BOOST_STATIC_ASSERT(boost::mpl::contains<boost::variant<uint8_t, float>::types, T>::value);
         typedef typename boost::multi_array<T, Rank>::size_type size_type;
         auto tensor_ptr = interpreter->typed_tensor<T>(tensor_index);
-        T* input_tensor_ptr = tensor.data();
+        T *input_tensor_ptr = tensor.data();
         for (size_type i = 0; i < tensor.num_elements(); i++)
             tensor_ptr[i] = input_tensor_ptr[i];
     }
