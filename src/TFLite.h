@@ -90,7 +90,7 @@ public:
      * @tparam T The tensor type, must be uint8_t or float, depending if model is quantized or not.
      * @tparam Rank Tensor rank
      * @param tensor The tensor in the form of a boost::multi_array
-     * @param tensor_index Index of the input tensor to fille
+     * @param tensor_index Index of the input tensor to fill
      */
     template<typename T, int Rank>
     void fill_input_tensor(const boost::multi_array<T, Rank>& tensor, int tensor_index) {
