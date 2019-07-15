@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 #include <boost/filesystem/path.hpp>
-#include <boost/multi_array.hpp>
 #include <boost/variant/variant.hpp>
 #include <boost/mpl/contains.hpp>
 #include <tensorflow/lite/model.h>
@@ -128,20 +127,6 @@ public:
     }
 
     /*!
-     * Fill input tensor from a boost::multi_array
-     * @tparam T The tensor type, must be uint8_t or float, depending if model is quantized or not.
-     * @tparam Rank Tensor rank
-     * @param tensor The tensor in the form of a boost::multi_array
-     * @param tensor_index Index of the input tensor to fill
-     */
-    template<typename T, unsigned long Rank>
-    void fill_input_tensor(const boost::multi_array<T, Rank> &tensor, int tensor_index) {
-        int n_elements = tensor.num_elements();
-        T *input_tensor_ptr = tensor.data();
-        fill_input_tensor(input_tensor_ptr, tensor_index, n_elements);
-    }
-
-    /*!
      * Fill all input tensors from a hashtable of tensors
      * @tparam T The tensor type, must be uint8_t or float, depending if model is quantized or not.
      * @tparam Rank Tensor rank
@@ -149,19 +134,6 @@ public:
      */
     template<typename T, int Rank>
     void fill_input_tensors(const std::map<int, Eigen::Tensor<T, Rank>> &tensors) {
-        for (const auto &tensor : tensors) {
-            fill_input_tensor(tensor.second, tensor.first);
-        }
-    }
-
-    /*!
-     * Fill all input tensors from a hashtable of tensors
-     * @tparam T The tensor type, must be uint8_t or float, depending if model is quantized or not.
-     * @tparam Rank Tensor rank
-     * @param tensors A map where the key is the tensor index and the value is the boost::multi_array tensor
-     */
-    template<typename T, unsigned long Rank>
-    void fill_input_tensors(const std::map<int, boost::multi_array<T, Rank>> &tensors) {
         for (const auto &tensor : tensors) {
             fill_input_tensor(tensor.second, tensor.first);
         }
