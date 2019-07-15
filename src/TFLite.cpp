@@ -6,7 +6,6 @@
 
 #include <tensorflow/lite/kernels/register.h>
 #include <boost/filesystem.hpp>
-#include <glog/logging.h>
 
 static void model_path_checker(const boost::filesystem::path &model_path) {
     if (!boost::filesystem::exists(model_path))
