@@ -10,7 +10,7 @@ This is because Tensorflow Lite needs to be compiled using bazel.
 
 The version of Tensorflow I currently use is the r2.0 branch on 
 [Tensorflow's github page](https://github.com/tensorflow/tensorflow).
-The version of bazel I use to compile it is version 0.28.0 and you can download it from 
+The version of bazel I use to compile it is version 0.26.0 and you can download it from 
 the [bazel github release page](https://github.com/bazelbuild/bazel/releases).
 
 ## Ubuntu/Debian
