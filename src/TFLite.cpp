@@ -137,3 +137,8 @@ int TFLite::get_tensor_element_count(int tensor_index) {
     std::vector<int> dims = get_tensor_dims(tensor_index);
     return std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<>());
 }
+
+void TFLite::invoke() {
+    if (interpreter->Invoke() != kTfLiteOk)
+        LOG(ERROR) << "Error: Interpreter's invocation failed";
+}

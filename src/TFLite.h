@@ -207,6 +207,11 @@ public:
         auto output_tensor_indexes = output_tensors();
         return get_tensors<T, Rank>(output_tensor_indexes);
     }
+
+    /*!
+     * Invokes the interpreter (performs the model's operations)
+     */
+    void invoke();
 };
 
 
