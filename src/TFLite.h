@@ -32,6 +32,19 @@ class TFLite {
     std::unique_ptr<tflite::FlatBufferModel> model;
     std::unique_ptr<tflite::Interpreter> interpreter;
 
+    /*!
+     * Build the FlatBufferModel from a FlatBuffer Tensorflow Lite file
+     * @param model_path The boost path to the FlatBuffer Tensorflow Lite file
+     */
+    void build_model(const boost::filesystem::path &model_path);
+
+    /*!
+     * Builds the interpreter, It is required for the model private variable be build before running this
+     * @param op_resolver The op resolver
+     */
+    void build_interpreter(const tflite::OpResolver &op_resolver);
+
+    void allocate_tensors();
 public:
     /*!
      * This function initialized TFLite with the built-in Ops.
