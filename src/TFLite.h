@@ -26,6 +26,8 @@ struct ExternalContextPair {
 //! The TFLite class wraps Tensorflow Lite
 /*!
  * This class abstracts and interfaces with Tensorflow Lite, taking care of any small details required to use it.
+ * Also, it adds a way to use Eigen's Tensor object. This class will stay as close as possible to TFLite only
+ * adding functionality and not abstracting too much. Abstraction will be done by the EastTFLite class.
  */
 class TFLite {
     tflite::StderrReporter error_reporter;
