@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
+option(BUILD_TESTS "Build the Tests" ON)
+
 include("cmake/HunterGate.cmake")
 HunterGate(
         URL "https://github.com/ruslo/hunter/archive/v0.23.204.tar.gz"
@@ -20,17 +22,22 @@ hunter_add_package(ZLIB)
 find_package(Boost CONFIG REQUIRED filesystem)
 find_package(Eigen3 CONFIG REQUIRED)
 find_package(glog CONFIG REQUIRED)
-find_package(GMock CONFIG REQUIRED)
+find_package(GTest CONFIG REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(TensorFlowLite)
 find_package(ZLIB CONFIG REQUIRED)
 
-add_library(EasyTFLite src/TFLite.cpp src/TFLite.h)
+add_library(EasyTFLite src/TFLite.cpp)
 target_link_libraries(EasyTFLite
         Boost::filesystem
         Eigen3::Eigen
         glog::glog
-        GMock::main
         TensorFlowLite::TensorFlowLite
         ${OpenCV_LIBS}
         ZLIB::ZLIB)
+target_include_directories(EasyTFLite PUBLIC src)
+
+if (BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif ()
