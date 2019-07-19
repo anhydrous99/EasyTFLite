@@ -118,13 +118,13 @@ public:
      * @tparam T The tensor type, must be uint8_t or float, depending if model is quantized or not
      * @param data Pointer to data
      * @param tensor_index Index of the tensor to fill
-     * @param n_elements Number of elements in data
      */
     template<typename T>
-    void fill_tensor(T *data, int tensor_index, int n_elements) {
+    void fill_tensor(T *data, int tensor_index) {
         // Stops if T is not uint8_t or float
         BOOST_STATIC_ASSERT(boost::mpl::contains<boost::variant<uint8_t, float>::types, T>::value);
         auto tensor_ptr = interpreter->typed_tensor<T>(tensor_index);
+        int n_elements = get_tensor_element_count(tensor_index);
         std::copy(data, data + n_elements, tensor_ptr);
     }
 
