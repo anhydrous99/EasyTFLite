@@ -171,6 +171,19 @@ public:
     }
 
     /*!
+     * Gets the pointer to the data of a tensor
+     * @tparam T The tensor type, must be uint8_t or float, depending if model is quantized or not
+     * @param tensor_index Index of the tensor to get
+     * @return Type T pointer to the data of a tensor
+     */
+    template<typename T>
+    T* get_tensor_ptr(int tensor_index) {
+        // Stops if T is not uint8_t or float
+        BOOST_STATIC_ASSERT(boost::mpl::contains<boost::variant<uint8_t, float>::types, T>::value);
+        return interpreter->typed_tensor<T>(tensor_index);
+    }
+
+    /*!
      * Gets a tensor
      * @tparam T The tensor type, must be uint8_t or float, depending if model is quantized or not
      * @tparam Rank Tensor rank
