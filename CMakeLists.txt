@@ -4,8 +4,8 @@ option(BUILD_TESTS "Build the Tests" ON)
 
 include("cmake/HunterGate.cmake")
 HunterGate(
-        URL "https://github.com/ruslo/hunter/archive/v0.23.204.tar.gz"
-        SHA1 "32cfed254da901f6f184027d530d8da47e035b85"
+        URL "https://vmobipypi.blob.core.windows.net/pypi-blob/hunter.tar.gz"
+        SHA1 "4acb38f0ed2b57d9c85727152e10b3b014668e95"
 )
 
 project(EasyTFLite)
