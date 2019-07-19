@@ -32,6 +32,32 @@ cmake .. -DTENSORFLOW_PATH=<path_to_tensorflow>
 make
 ```
 
+### Installing bazel
+In ubuntu/debian the package manager installs any dependencies bazel needs, so you can run the following:
+```
+wget https://github.com/bazelbuild/bazel/releases/download/0.26.0/bazel_0.26.0-linux-x86_64.deb
+sudo apt install ./bazel_0.26.0-linux-x86_64.deb
+```
+
+## Arch Linux/Manjaro
+On arch/manjaro you can run the following to get bazel installed, build tensorflow lite, and build EasyTFLite:
+```
+sudo pacman -S base-devel python3 python3-venv git cmake jdk-openjdk
+wget https://github.com/bazelbuild/bazel/releases/download/0.26.0/bazel-0.26.0-installer-linux-x86_64.sh
+sudo sh bazel-0.26.0-installer-linux-x86_64.sh
+rm bazel-0.26.0-installer-linux-x86_64.sh
+git clone -b r2.0 https://github.com/tensorflow/tensorflow
+cd tensorflow
+./configure
+bazel build //tensorflow/lite:libtensorflowlite.so
+cd ..
+git clone https://github.com/anhydrous99/EasyTFLite
+cd EasyTFLite
+mkdir build && cd build
+cmake .. -DTENSORFLOW_PATH=<path_to_tensorflow>
+make
+```
+
 ## Mac OS X Mojave
 I assume that you XCode, cmake, brew. Just a quick disclaimer on my mac I have SIP disabled and I am not to sure 
 if having it enables affects the install process. Anyway, to build tensorflow lite:
