@@ -123,9 +123,10 @@ public:
     void fill_tensor(T *data, int tensor_index) {
         // Stops if T is not uint8_t or float
         BOOST_STATIC_ASSERT(boost::mpl::contains<boost::variant<uint8_t, float>::types, T>::value);
-        auto tensor_ptr = interpreter->typed_tensor<T>(tensor_index);
+        auto *tensor_ptr = interpreter->typed_tensor<T>(tensor_index);
         int n_elements = get_tensor_element_count(tensor_index);
-        std::copy(data, data + n_elements, tensor_ptr);
+        for (int i = 0; i < n_elements; i++)
+            tensor_ptr[i] = data[i];
     }
 
     /*!
