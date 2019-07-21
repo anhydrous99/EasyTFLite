@@ -149,18 +149,18 @@ namespace {
     ////////////// Tests to make sure calculation are done correctly //////////////
     TEST(TFLiteTest, SingleInput_MultiOutput_CorrectCalculation_Test) {
         // Expected output data
-        std::array<float, 6> output1 = {-0.14983515,  0.47272223, -0.73745316,  0.46977115, -0.07364011, 0.26235366};
-        std::array<float, 6> output2 = {0.11423676, -0.04815429, -0.52054065, -1.1527455 ,  0.12045179, -0.06280062};
+        std::array<float, 6> output1 = {-0.14983515, 0.47272223, -0.73745316, 0.46977115, -0.07364011, 0.26235366};
+        std::array<float, 6> output2 = {0.11423676, -0.04815429, -0.52054065, -1.1527455, 0.12045179, -0.06280062};
 
         // Allocating input container & init with zeros
-        std::array<float, 4096> input = { 0.0 };
+        std::array<float, 4096> input = {0.0};
 
         // Grab input data
         std::ifstream input_data_file("../../tests/random-data.txt");
         if (input_data_file.is_open()) {
             std::string line;
             int i = 0;
-            while (getline (input_data_file, line)) {
+            while (getline(input_data_file, line)) {
                 input[i] = std::stof(line);
                 i++;
             }
@@ -181,8 +181,8 @@ namespace {
 
         // Get output tensors
         std::vector<int> output_tensor_indexes = tflite.output_tensors();
-        auto* output1_inter = tflite.get_tensor_ptr<float>(output_tensor_indexes[0]);
-        auto* output2_inter = tflite.get_tensor_ptr<float>(output_tensor_indexes[1]);
+        auto *output1_inter = tflite.get_tensor_ptr<float>(output_tensor_indexes[0]);
+        auto *output2_inter = tflite.get_tensor_ptr<float>(output_tensor_indexes[1]);
 
         float abs_error = 0.00001;
 
@@ -194,17 +194,17 @@ namespace {
 
     TEST(TFLiteTest, MultiInput_SimpleOutput_CorrectCalculation_Test) {
         // Expected output data
-        std::array<float, 6> output = { 0.0 }; // TODO
+        std::array<float, 6> output = {-0.68169963, -0.54100305, 1.3366573, -1.2651198, 0.755826, -0.27840295};
 
         // Allocating input container & init with zeros
-        std::array<float, 4096> input = { 0.0 };
+        std::array<float, 4096> input = {0.0};
 
         // Grab input data
         std::ifstream input_data_file("../../tests/random-data.txt");
         if (input_data_file.is_open()) {
             std::string line;
             int i = 0;
-            while (getline (input_data_file, line)) {
+            while (getline(input_data_file, line)) {
                 input[i] = std::stof(line);
                 i++;
             }
@@ -227,29 +227,30 @@ namespace {
 
         // Get output tensors
         std::vector<int> output_tensor_indexes = tflite.output_tensors();
-        auto* output_inter = tflite.get_tensor_ptr<float>(output_tensor_indexes[0]);
+        auto *output_inter = tflite.get_tensor_ptr<float>(output_tensor_indexes[0]);
 
         float abs_error = 0.00001;
 
         for (int i = 0; i < 6; i++)
-            EXPECT_NEAR(output_inter[i], output[i], abs_error);
+            ASSERT_NEAR(output_inter[i], output[i], abs_error);
 
     }
 
     TEST(TFLiteTest, SingleVolumeInput_CorrectCalculation_Test) {
         // Expected output data
-        std::array<float, 10> output = { 0.0 }; // TODO
+        std::array<float, 10> output = {0.21751887, 0.7512632, 0.13513072, 0.12721045, 0.923916, -0.9657576, -0.3309331,
+                                        0.2791444, 1.629914, 2.21699};
 
         // Allocating input container & init with zeros
         // Dims are 1x16x16x16x1=4096
-        std::array<float, 4096> input = { 0.0 };
+        std::array<float, 4096> input = {0.0};
 
         // Grab input data
         std::ifstream input_data_file("../../tests/random-data.txt");
         if (input_data_file.is_open()) {
             std::string line;
             int i = 0;
-            while (getline (input_data_file, line)) {
+            while (getline(input_data_file, line)) {
                 input[i] = std::stof(line);
                 i++;
             }
@@ -270,12 +271,12 @@ namespace {
 
         // Get output tensors
         std::vector<int> output_tensor_indexes = tflite.output_tensors();
-        auto* output_inter = tflite.get_tensor_ptr<float>(output_tensor_indexes[0]);
+        auto *output_inter = tflite.get_tensor_ptr<float>(output_tensor_indexes[0]);
 
         float abs_error = 0.00001;
 
         for (int i = 0; i < 10; i++)
-            EXPECT_NEAR(output_inter[i], output[i], abs_error);
+            ASSERT_NEAR(output_inter[i], output[i], abs_error);
 
     }
 }
