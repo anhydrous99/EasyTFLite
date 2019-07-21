@@ -46,6 +46,9 @@ class TFLite {
      */
     void build_interpreter(const tflite::OpResolver &op_resolver);
 
+    /*!
+     * Allocates tensors, runs interpreter->AllocateTensors()
+     */
     void allocate_tensors();
 public:
     /*!
@@ -185,6 +188,20 @@ public:
     }
 
     /*!
+     * Gets the pointers to the data of multi tensors
+     * @tparam T The tensor type, must be uint8_t or float, depending if model is quantized or not
+     * @param tensor_indexes A vector of indexes of the tensors to get
+     * @return A vector of pointers that point to the tensors
+     */
+    template<typename T>
+    std::vector<T*> get_tensor_ptrs(const std::vector<int> &tensor_indexes) {
+        std::vector<T*> output;
+        for (int index : tensor_indexes)
+            output.push_back(get_tensor_ptr<T>(index));
+        return output;
+    }
+
+    /*!
      * Gets a tensor
      * @tparam T The tensor type, must be uint8_t or float, depending if model is quantized or not
      * @tparam Rank Tensor rank
@@ -235,6 +252,26 @@ public:
     std::vector<Eigen::Tensor<T, Rank>> get_output_tensors() {
         auto output_tensor_indexes = output_tensors();
         return get_tensors<T, Rank>(output_tensor_indexes);
+    }
+
+    /*!
+     * Gets the pointers to the output tensors
+     * @tparam T The tensor type, must be uint8_t or float, depending if model is quantized or not
+     * @return A vector of pointers, each pointing to an output tensor
+     */
+    template<typename T>
+    std::vector<T*> get_output_tensor_ptrs() {
+        return get_tensor_ptrs<T>(output_tensors());
+    }
+
+    /*!
+     * Gets the pointer to the input tensors
+     * @tparam T The tensor type, must be uint8_t or float, depending if model is quantized or not
+     * @return A vector of pointers, each pointing to an input tensor
+     */
+    template<typename T>
+    std::vector<T*> get_input_tensor_ptrs() {
+        return get_tensor_ptrs<T>(input_tensors());
     }
 
     /*!
