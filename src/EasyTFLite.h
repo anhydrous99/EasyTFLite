@@ -50,13 +50,31 @@ public:
      * interpreter for inference. The model must only have a single input and the input must be a rank 4 Tensor,
      * [1, width, height, channels].
      * @param image OpenCV's Mat image to run inference on
-     * @param preprocess_func Your custom proprocess function, the input of the function must be an cv::Mat
+     * @param preprocess_func Your custom preprocess function, the input of the function must be an cv::Mat
      * and the output a vector of floats containing the elements converted to float flattened to a single dimension, C
      * style.
      * @return A vector of pointers to the output tensors
      */
     std::vector<float *>
     run_inference_ptrs(const cv::Mat &image, const std::function<std::vector<float>(cv::Mat)> &preprocess_func);
+
+    /*!
+     * Runs inference where the input is a vector of pointers that point to the flattened input data and the output is
+     * a vector of pointers that point to the output data. It is assumed that the input size or the tensors is correct.
+     * @tparam InputType The input tensor data type, it must be uint8_t or float
+     * @tparam OutputType The output tensor data type, it must be uint8_t or float
+     * @param input_ptr A vector of pointers of type InputType that point to the input data
+     * @return A vector of pointers of type OutputType that point to the output data
+     */
+    template<typename InputType, typename OutputType>
+    std::vector<OutputType *> run_inference_ptrs(const std::vector<InputType *> input_ptrs) {
+        // Fill input tensors
+        fill_input_tensors<InputType>(input_ptrs);
+        // Invoke Network
+        invoke();
+        // Get output tensors
+        return get_output_tensor_ptrs<OutputType>();
+    }
 };
 
 

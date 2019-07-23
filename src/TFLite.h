@@ -160,6 +160,20 @@ public:
     }
 
     /*!
+     * Fill input tensors from a vector of pointers
+     * @tparam T The tensor type, must be uint8_t or float, depending if model is quantized or not
+     * @param tensors A vector of pointers that point to tensor data
+     */
+    template<typename T>
+    void fill_input_tensors(const std::vector<T *> &tensors) {
+        auto input_indexes = input_tensors();
+        if (input_indexes.size() != tensors.size())
+            LOG(FATAL) << "Error: number of tensors does not match the number of inputs\n";
+        for (int i = 0; i < input_indexes.size(); i++)
+            fill_tensor(tensors[i], input_indexes[i]);
+    }
+
+    /*!
      * Fill input tensors from a vector of tensors
      * @tparam T The tensor type, must be uint8_t or float, depending if model is quantized or not
      * @tparam Rank Tensor rank
@@ -169,7 +183,7 @@ public:
     void fill_input_tensors(const std::vector<Eigen::Tensor<T, Rank>> &tensors) {
         auto input_indexes = input_tensors();
         if (input_indexes.size() != tensors.size())
-            LOG(FATAL) << "Error: number of tensors does not match number of inputs\n";
+            LOG(FATAL) << "Error: number of tensors does not match the number of inputs\n";
         for (int i = 0; i < input_indexes.size(); i++)
             fill_tensor(tensors[i], input_indexes[i]);
     }
