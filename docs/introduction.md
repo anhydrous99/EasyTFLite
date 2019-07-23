@@ -78,3 +78,9 @@ mkdir build && cd build
 cmake .. -DTENSORFLOW_PATH=<path_to_tensorflow>
 make
 ```
+On some macs rpath seems to be broken at run time, so to fix this you can the following:
+```
+install_name_tool -change @rpath/libtensorflowlite.so \
+                  <Path to tensorflow>/bazel-bin/tensorflow/lite/libtensorflowlite.so \
+                  YourExecutable
+```
