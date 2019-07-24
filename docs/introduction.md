@@ -59,28 +59,21 @@ make
 ```
 
 ## Mac OS X Mojave
-I assume that you XCode, cmake, brew. Just a quick disclaimer on my mac I have SIP disabled and I am not to sure 
-if having it enables affects the install process. Anyway, to build tensorflow lite:
+Unfortunately, the dynamic build of tensorflow lite, using bazel is broken, on Mac OS X Mojave. So, you can use the 
+static build. Unfortunately, again, the static tensorflow lite build on the latest versions of tensorflow is broken. 
+But, however, you can use tensorflow version 1.13.\*. Be sure to have cmake, xcode, git, and all that jazz installed. 
+The process is:
 ```
-git clone -b r2.0 https://github.com/tensorflow/tensorflow
+git clone -b r1.13 https://github.com/tensorflow/tensorflow
 cd tensorflow
-./configure
+sh ./tensorflow/lite/tools/make/download_dependencies.sh
+make -f tensorflow/lite/tools/make/Makefile
 ```
-Follow the prompt then run:
-```
-bazel build //tensorflow/lite:libtensorflowlite.so
-```
-Then you can run the same commands as you would in Ubuntu, in another arbitrary directory:
+Now to build EasyTFLite with the extra cmake flag `STATIC_TENSORFLOWLITE` set to `ON`
 ```
 git clone https://github.com/anhydrous99/EasyTFLite
 cd EasyTFLite
 mkdir build && cd build
-cmake .. -DTENSORFLOW_PATH=<path_to_tensorflow>
+cmake .. -DTENSORFLOW_PATH=<path_to_tensorflow> -DSTATIC_TENSORFLOWLITE=ON
 make
-```
-On some macs rpath seems to be broken at run time, so to fix this you can the following:
-```
-install_name_tool -change @rpath/libtensorflowlite.so \
-                  <Path to tensorflow>/bazel-bin/tensorflow/lite/libtensorflowlite.so \
-                  YourExecutable
 ```
