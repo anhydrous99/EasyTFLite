@@ -28,7 +28,7 @@ find_package(OpenCV REQUIRED)
 find_package(TensorFlowLite)
 find_package(ZLIB CONFIG REQUIRED)
 
-add_library(EasyTFLite src/TFLite.cpp src/EasyTFLite.cpp)
+add_library(EasyTFLite src/TFLite.cpp src/EasyTFLite.cpp src/SSD_EasyTFLite.cpp)
 target_link_libraries(EasyTFLite
         Boost::filesystem
         Eigen3::Eigen
