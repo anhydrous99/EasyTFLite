@@ -130,7 +130,7 @@ public:
      * a vector of pointers that point to the output data. It is assumed that the input size or the tensors is correct.
      * @tparam InputType The input tensor data type, it must be uint8_t or float
      * @tparam OutputType The output tensor data type, it must be uint8_t or float
-     * @param input_ptr A vector of pointers of type InputType that point to the input data
+     * @param input_ptrs A vector of pointers of type InputType that point to the input data
      * @return A vector of pointers of type OutputType that point to the output data
      */
     template<typename InputType, typename OutputType>

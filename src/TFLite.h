@@ -19,7 +19,9 @@
 
 //! A struct that contains the TfLite context type and a pointer to the TfLite Context
 struct ExternalContextPair {
+    //! The external context type
     TfLiteExternalContextType type;
+    //! The external context, for use with something like the edgetpu
     TfLiteExternalContext *ctx;
 };
 
@@ -30,14 +32,10 @@ struct ExternalContextPair {
  * adding functionality and not abstracting too much. Abstraction will be done by the EastTFLite class.
  */
 class TFLite {
-    tflite::StderrReporter error_reporter;
-    std::unique_ptr<tflite::FlatBufferModel> model;
-    std::unique_ptr<tflite::Interpreter> interpreter;
-
     /*!
-     * Build the FlatBufferModel from a FlatBuffer Tensorflow Lite file
-     * @param model_path The boost path to the FlatBuffer Tensorflow Lite file
-     */
+    * Build the FlatBufferModel from a FlatBuffer Tensorflow Lite file
+    * @param model_path The boost path to the FlatBuffer Tensorflow Lite file
+    */
     void build_model(const boost::filesystem::path &model_path);
 
     /*!
@@ -50,6 +48,15 @@ class TFLite {
      * Allocates tensors, runs interpreter->AllocateTensors()
      */
     void allocate_tensors();
+
+protected:
+    //! An error reporting object
+    tflite::StderrReporter error_reporter;
+    //! Contains the model information, must be alive for the life of the interpreter
+    std::unique_ptr<tflite::FlatBufferModel> model;
+    //! The Tensorflow Lite interpreter
+    std::unique_ptr<tflite::Interpreter> interpreter;
+
 public:
     /*!
      * This function initialized TFLite with the built-in Ops.
@@ -195,7 +202,7 @@ public:
      * @return Type T pointer to the data of a tensor
      */
     template<typename T>
-    T* get_tensor_ptr(int tensor_index) {
+    T *get_tensor_ptr(int tensor_index) {
         // Stops if T is not uint8_t or float
         BOOST_STATIC_ASSERT(boost::mpl::contains<boost::variant<uint8_t, float>::types, T>::value);
         return interpreter->typed_tensor<T>(tensor_index);
@@ -208,8 +215,8 @@ public:
      * @return A vector of pointers that point to the tensors
      */
     template<typename T>
-    std::vector<T*> get_tensor_ptrs(const std::vector<int> &tensor_indexes) {
-        std::vector<T*> output;
+    std::vector<T *> get_tensor_ptrs(const std::vector<int> &tensor_indexes) {
+        std::vector<T *> output;
         for (int index : tensor_indexes)
             output.push_back(get_tensor_ptr<T>(index));
         return output;
@@ -249,7 +256,7 @@ public:
      * @return A vector of wanted Eigen Tensors
      */
     template<typename T, int Rank>
-    std::vector<Eigen::Tensor<T, Rank>> get_tensors(const std::vector<int>& tensor_indexes) {
+    std::vector<Eigen::Tensor<T, Rank>> get_tensors(const std::vector<int> &tensor_indexes) {
         std::vector<Eigen::Tensor<T, Rank>> output;
         for (int index : tensor_indexes)
             output.push_back(get_tensor<T, Rank>(index));
@@ -274,7 +281,7 @@ public:
      * @return A vector of pointers, each pointing to an output tensor
      */
     template<typename T>
-    std::vector<T*> get_output_tensor_ptrs() {
+    std::vector<T *> get_output_tensor_ptrs() {
         return get_tensor_ptrs<T>(output_tensors());
     }
 
@@ -284,7 +291,7 @@ public:
      * @return A vector of pointers, each pointing to an input tensor
      */
     template<typename T>
-    std::vector<T*> get_input_tensor_ptrs() {
+    std::vector<T *> get_input_tensor_ptrs() {
         return get_tensor_ptrs<T>(input_tensors());
     }
 
