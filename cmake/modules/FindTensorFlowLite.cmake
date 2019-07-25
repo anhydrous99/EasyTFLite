@@ -8,7 +8,7 @@ if (NOT TENSORFLOW_PATH)
     message(FATAL_ERROR "TENSORFLOW_PATH must point to your TensorFlow source build")
 endif ()
 
-if (NOT ${STATIC_TENSORFLOWLITE})
+if (NOT STATIC_TENSORFLOWLITE)
     set(BAZEL_EXTERNAL_PATH "${TENSORFLOW_PATH}/bazel-tensorflow/external")
 
     set(TENSORFLOWLITE_INCLUDE_DIR

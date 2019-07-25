@@ -14,9 +14,13 @@ namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
 int main(int argc, char **argv) {
-    std::string base_path = "../../examples/galaxyclassification/";
-    fs::path source;
-    fs::path model_path;
+    // Init google logging
+    google::InitGoogleLogging(argv[0]);
+
+    // Get paths
+    fs::path project_path(fs::current_path().parent_path());
+    fs::path source(project_path.string() + "/examples/galaxyclassification/110887.jpg");
+    fs::path model_path(project_path.string() + "/examples/galaxyclassification/galaxmobilenet.tflite");
 
     // Image scale function
     std::function<float(unsigned char)> scale_func = [](unsigned char x) -> float {
@@ -26,9 +30,9 @@ int main(int argc, char **argv) {
     // Get and parse arguments
     po::options_description description("An EasyTFLite Image Classification example");
     description.add_options()
-            ("model", po::value<fs::path>(&model_path)->default_value(fs::path(base_path + "galaxymobilenet.tflite")),
+            ("model", po::value<fs::path>(&model_path)->default_value(model_path),
              "Path to tensorFlow lite flatbuffer model")
-            ("image", po::value<fs::path>(&source)->default_value(fs::path(base_path + "110887.jpg")),
+            ("image", po::value<fs::path>(&source)->default_value(source),
              "Path to galaxy image to classify")
             ("help", "Produce help message");
     po::variables_map vm;
@@ -37,6 +41,10 @@ int main(int argc, char **argv) {
         std::cout << description << "\n";
         return 0;
     }
+
+    // Show selected arguments
+    std::cout << "Model path: " << model_path << std::endl;
+    std::cout << "Image path: " << source << std::endl;
 
     // Get image
     cv::Mat image = cv::imread(source.string());
@@ -57,14 +65,14 @@ int main(int argc, char **argv) {
     // The third float indicates the potential of the galaxy being a artifact
     // Other floats - TODO
     //  https://www.kaggle.com/c/galaxy-zoo-the-galaxy-challenge/overview/the-galaxy-zoo-decision-tree
-    std::cout << "The galaxy could be ";
+    std::cout << "The galaxy is ";
     if (output[2] > std::max(output[0], output[1])) {
         std::cout << "an artifact\n";
         return 0;
     } else if (output[0] > output[1]) {
-        std::cout << " rounded ";
+        std::cout << "rounded ";
     } else {
-        std::cout << " disk shaped ";
+        std::cout << "disk shaped ";
     }
 
     std::cout << '\n';
