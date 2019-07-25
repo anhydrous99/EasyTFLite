@@ -142,6 +142,28 @@ public:
         // Get output tensors
         return get_output_tensor_ptrs<OutputType>();
     }
+
+    /*!
+     * Runs inference where the input is a vector of Eigen Tensors that contain the input data and the output is a
+     * vector of Eigen Tensors that contain the output data. All input tensors in the model must have the same rank
+     * as well as the output tensors must have the same rank. It is in the map to have the template ranks
+     * be the largest rank in either the input or output tensors.
+     * @tparam InputType The input tensor data type, it must be uint8_t or float
+     * @tparam OutputType The output tensor data type, it must be uint8_t or float
+     * @tparam InputRank The input tensor Rank, all inputs of model must have the same rank
+     * @tparam OutputRank The output tensor Rank, all outputs of model must have the same rank
+     * @param input_tensors The input eigen tensors contained in a vector
+     * @return The output eigen tensors contained in a vector
+     */
+    template<typename InputType, typename OutputType, int InputRank, int OutputRank>
+    std::vector<Eigen::Tensor<OutputType, OutputRank>> run_inference(const std::vector<Eigen::Tensor<InputType, InputRank>> input_tensors) {
+        // Fill input tensors
+        fill_input_tensors<InputType, InputRank>(input_tensors);
+        // Invoke Network
+        invoke();
+        // Get output tensors
+        return get_output_tensors<OutputType, OutputRank>();
+    }
 };
 
 
