@@ -44,6 +44,9 @@ if (BUILD_TESTS)
 endif ()
 
 if (BUILD_EXAMPLES)
-    add_executable(ObjectDetection examples/galaxyclassification/GalaxyClassification.cpp)
-    target_link_libraries(ObjectDetection EasyTFLite Boost::program_options)
+    add_executable(GalaxyClassification examples/galaxyclassification/GalaxyClassification.cpp)
+    target_link_libraries(GalaxyClassification EasyTFLite Boost::program_options)
+
+    add_executable(SSD_ObjectDetection examples/objectdetection/SSD_ObjectDetection.cpp)
+    target_link_libraries(SSD_ObjectDetection EasyTFLite Boost::program_options)
 endif ()
