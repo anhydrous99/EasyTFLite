@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
 
     // Image scale function
     std::function<float(unsigned char)> scale_func = [](unsigned char x) -> float {
-        return x / 255.;
+        return static_cast<float>(x) / 255.0f;
     };
 
     // Get and parse arguments
