@@ -24,7 +24,7 @@ if (NOT STATIC_TENSORFLOWLITE)
             NAMES tensorflowlite libtensorflowlite
             HINTS
             "${TENSORFLOW_PATH}/bazel-bin/tensorflow/lite"
-    )
+            )
 else ()
     set(TENSORFLOWLITE_MAKE_PATH "${TENSORFLOW_PATH}/tensorflow/lite/tools/make")
 
@@ -55,11 +55,13 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(TENSORFLOWLITE
 if (TENSORFLOWLITE_FOUND)
     set(TENSORFLOWLITE_LIBRARIES ${TENSORFLOWLITE_LIBRARY})
     set(TENSORFLOWLITE_INCLUDE_DIRS ${TENSORFLOWLITE_INCLUDE_DIR})
-    if(NOT TARGET TensorFlowLite::TensorFlowLite)
+    if (NOT TARGET TensorFlowLite::TensorFlowLite)
         add_library(TensorFlowLite::TensorFlowLite UNKNOWN IMPORTED)
         set_target_properties(TensorFlowLite::TensorFlowLite PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${TENSORFLOWLITE_INCLUDE_DIRS}")
         set_property(TARGET TensorFlowLite::TensorFlowLite APPEND PROPERTY IMPORTED_LOCATION "${TENSORFLOWLITE_LIBRARY}")
-    endif()
+    endif ()
+else ()
+    message(FATAL_ERROR "Couldn't find Tensorflow Lite. If statically compiled be sure to include the -DSTATIC_TENSORFLOWLITE flag.")
 endif ()
 
 mark_as_advanced(TENSORFLOWLITE_INCLUDE_DIR TENSORFLOWLITE_LIBRARY)
