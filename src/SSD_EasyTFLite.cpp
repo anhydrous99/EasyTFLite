@@ -25,7 +25,7 @@ std::array<Eigen::Tensor<float, 2>, 4> SSD_EasyTFLite::run_inference(const cv::M
     cv::Mat resized_image;
     std::vector<int> dims = get_tensor_dims(input_index);
     cv::Size target_size(dims[1], dims[2]);
-    cv::resize(resized_image, resized_image, target_size);
+    cv::resize(input_image, resized_image, target_size);
 
     // Run inference
     std::vector<float *> output_tensors;

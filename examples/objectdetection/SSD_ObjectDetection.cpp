@@ -36,6 +36,7 @@ int main(int argc, char **argv) {
     fs::path project_path(fs::current_path().parent_path());
     fs::path model_path(project_path.string() + "/examples/objectdetection/detect.tflite");
     fs::path label_path(project_path.string() + "/examples/objectdetection/labelmap.txt");
+    fs::path output(project_path.string() + "/examples/objectdetection/output.mjpg");
 
     po::options_description description("An EasyTFLite Single-Shot Object Detection example");
     description.add_options()
@@ -47,6 +48,8 @@ int main(int argc, char **argv) {
              "The path to the labels")
             ("threshold", po::value<float>(&threshold)->default_value(threshold),
              "Detection Threshold")
+            ("output", po::value(&output)->default_value(output),
+             "The path to the output video")
             ("help", "Produce help message");
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, description), vm);
@@ -76,14 +79,17 @@ int main(int argc, char **argv) {
     else
         cap.open(videosource);
 
+    // Init video writer
+    cv::VideoWriter writer(output.string(), cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), cap.get(cv::CAP_PROP_FPS),
+                           cv::Size((int) cap.get(cv::VideoCaptureProperties::CAP_PROP_FRAME_WIDTH),
+                                    (int) cap.get(cv::VideoCaptureProperties::CAP_PROP_FRAME_HEIGHT)));
+
     // Check if video capture was successfully opened
     if (!cap.isOpened())
         LOG(FATAL) << "Error: Video capture couldn't be opened\n";
 
     cv::Mat frame;
-    while (cap.isOpened()) {
-        cap >> frame; // get a new frame from camera
-
+    while (cap.read(frame)) {
         // Run model inference on captured frame
         // First tensor contains the location data
         // Second tensor contains the detected classes
@@ -152,12 +158,11 @@ int main(int argc, char **argv) {
                 cv::Scalar(255, 0, 0)
         );
 
-        // Check for q pressed
-        if (cv::waitKey(5) == 'q')
-            break;
+        writer.write(frame);
     }
 
     // Clean up
-    cv::destroyAllWindows();
+    cap.release();
+    writer.release();
     return 0;
 }
