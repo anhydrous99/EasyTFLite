@@ -9,11 +9,10 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_HOME_DIRECTORY}/cmake/module
 
 find_package(Boost REQUIRED filesystem random program_options)
 find_package(Eigen3 REQUIRED)
-find_package(glog REQUIRED)
+find_package(Glog REQUIRED)
 find_package(GTest REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(TensorFlowLite)
-find_package(ZLIB REQUIRED)
 
 add_library(EasyTFLite src/TFLite.cpp src/EasyTFLite.cpp src/SSD_EasyTFLite.cpp)
 target_link_libraries(EasyTFLite
@@ -21,8 +20,7 @@ target_link_libraries(EasyTFLite
         Eigen3::Eigen
         glog::glog
         TensorFlowLite::TensorFlowLite
-        ${OpenCV_LIBS}
-        ZLIB::ZLIB)
+        ${OpenCV_LIBS})
 target_include_directories(EasyTFLite PUBLIC src)
 
 if (BUILD_TESTS)
