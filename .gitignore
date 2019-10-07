@@ -3,3 +3,4 @@ build/
 docs/html/
 docs/latex/
 .idea/
+.DS_Store
